@@ -106,7 +106,7 @@ const Chat = () => {
           </Typography>
           <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
             You can ask some questions related to Knowledge, Business, Advices,
-            Education, etc. But avoid sharing personal information
+            Education, etc. But avoid to share your personal details.
           </Typography>
           <Button
             onClick={handleDeleteChats}
