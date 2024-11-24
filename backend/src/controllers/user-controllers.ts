@@ -18,14 +18,14 @@ export const userSignup = async (
     const user = new User({ name, email, password: hashedPassword });
     await user.save();
 
-    // create token and store cookie
+    // clear token
     res.clearCookie(COOKIE_NAME, {
       httpOnly: true,
       domain: "localhost",
       signed: true,
       path: "/",
     });
-
+    // create token
     const token = createToken(user._id.toString(), user.email, "7d");
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
@@ -63,7 +63,7 @@ export const userLogin = async (
       return res.status(403).send("Incorrect Password");
     }
 
-    // create token and store cookie
+    // clear token
 
     res.clearCookie(COOKIE_NAME, {
       httpOnly: true,
@@ -72,6 +72,7 @@ export const userLogin = async (
       path: "/",
     });
 
+    // create token
     const token = createToken(user._id.toString(), user.email, "7d");
     const expires = new Date();
     expires.setDate(expires.getDate() + 7);
@@ -100,6 +101,7 @@ export const verifyUser = async (
   try {
     //user token check
     const user = await User.findById(res.locals.jwtData.id);
+
     if (!user) {
       return res.status(401).send("User not registered OR Token malfunctioned");
     }
@@ -130,6 +132,7 @@ export const userLogout = async (
       return res.status(401).send("Permissions didn't match");
     }
 
+    // clear cookie
     res.clearCookie(COOKIE_NAME, {
       httpOnly: true,
       domain: "localhost",
