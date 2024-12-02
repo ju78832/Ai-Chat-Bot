@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -16,7 +15,7 @@ const Footer = () => {
           By Mohd Juned
           <span>
             <Link style={{ color: "white" }} className="nav-link" to={""}>
-              Newborn Coders
+              Newborn Coder
             </Link>
           </span>
         </p>
