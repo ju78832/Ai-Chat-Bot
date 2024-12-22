@@ -11,13 +11,12 @@ export const generateChatCompletion = async (
 ) => {
   const { message } = req.body;
   try {
-    /*
     const user = await User.findById(res.locals.jwtData.id);
     if (!user)
       return res
         .status(401)
         .json({ message: "User not registered OR Token malfunctioned" });
-*/
+
     /*
     const chats = user.chats.map(({ role, content }) => ({
       role,
@@ -25,6 +24,7 @@ export const generateChatCompletion = async (
     })) as ChatCompletionRequestMessage[];
      */
     // chats.push({ content: message, role: "user" });
+    user.chats.push({ role: "user", content: message });
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const chat = model.startChat({
@@ -43,9 +43,9 @@ export const generateChatCompletion = async (
     let result = await chat.sendMessage(message);
 
     const response = result.response.text();
-    return res.status(200).json({ message: response });
-
-    //  user.chats.push({ content: message, role: "user" });
+    user.chats.push({ content: response, role: "assistant" });
+    await user.save();
+    return res.status(200).json({ chats: user.chats });
 
     // const config = configureOpenAI();
 
