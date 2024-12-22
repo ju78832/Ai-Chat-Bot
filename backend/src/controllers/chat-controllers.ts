@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
-import { configureOpenAI } from "../config/openai-config.js";
-import { OpenAIApi, ChatCompletionRequestMessage } from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// import { configureOpenAI } from "../config/openai-config.js";
+// import { OpenAIApi, ChatCompletionRequestMessage } from "openai";
 export const generateChatCompletion = async (
   req: Request,
   res: Response,
@@ -9,32 +11,58 @@ export const generateChatCompletion = async (
 ) => {
   const { message } = req.body;
   try {
+    /*
     const user = await User.findById(res.locals.jwtData.id);
     if (!user)
       return res
         .status(401)
         .json({ message: "User not registered OR Token malfunctioned" });
-
+*/
+    /*
     const chats = user.chats.map(({ role, content }) => ({
       role,
       content,
     })) as ChatCompletionRequestMessage[];
-    chats.push({ content: message, role: "user" });
-    user.chats.push({ content: message, role: "user" });
+     */
+    // chats.push({ content: message, role: "user" });
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const chat = model.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: "Hello!" }],
+        },
+        {
+          role: "model",
+          parts: [{ text: "Great to meet you. What would you like to know?" }],
+        },
+      ],
+    });
 
-    const config = configureOpenAI();
-    const openai = new OpenAIApi(config);
+    let result = await chat.sendMessage(message);
+
+    const response = result.response.text();
+    return res.status(200).json({ message: response });
+
+    //  user.chats.push({ content: message, role: "user" });
+
+    // const config = configureOpenAI();
+
+    // const openai = new OpenAIApi(config);
     // get response from api
-    const chatResponse = await openai.createChatCompletion({
+    /*   const chatResponse = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: chats,
     });
+    
     user.chats.push({
       content: chatResponse.data.choices[0].message,
       role: "assistant",
     });
-    await user.save();
-    return res.status(200).json({ chats: user.chats });
+    */
+    //  await user.save();
+    //   return res.status(200).json({ chats: user.chats });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Something went wrong" });

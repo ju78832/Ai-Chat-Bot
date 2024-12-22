@@ -11,7 +11,6 @@ const chatRoutes = Router();
 chatRoutes.post(
   "/new",
   validate(chatCompletionValidator),
-  verifyToken,
   generateChatCompletion
 );
 chatRoutes.get("/all-chats", verifyToken, sendChatsToUser);
